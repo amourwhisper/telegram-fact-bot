@@ -52,6 +52,7 @@ bot.onText(/\/search (.+)/, async (msg, match) => {
             responseText += searchResult.snippets[0];
             if (searchResult.url) {
                 responseText += `/n/n[Подробнее](${searchResult.url})`;
+            }
                 await bot.sendMessage(chatId, responseText, { parse_mode: 'Markdown' });
         } else {
             responseText = `Извините, не удалось найти информацию по запросу "${query}". Попробуйте перефразировать.`;
@@ -59,8 +60,8 @@ bot.onText(/\/search (.+)/, async (msg, match) => {
             return;
         }
     } catch (error) {
-        console.error(('Ошибка поиска:', error);
-        bot.sendMessage(chatId, 'Произошла ошибка при выполнении поиска. Пожалуйста, попробуйте позже.');
+        console.error('Ошибка поиска:', error);
+        await bot.sendMessage(chatId, 'Произошла ошибка при выполнении поиска. Пожалуйста, попробуйте позже.');
     }
 });
 //console.log('Бот успешно запущен!');
@@ -74,6 +75,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
