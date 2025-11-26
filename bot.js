@@ -14,7 +14,14 @@ const factsKeyboard = {
         one_time_keyboard: false,
     },
 };
-const bot = new TelegramBot(token, {polling:true});
+const port = process.env.PORT || 3000;
+const url = process.env.RENDER_EXTERNAL_URL;
+const bot = new TelegramBot(token);
+if (url) {
+    bot.setWebHook(`${url}/bot${token}`);
+} else {
+    bot.startPolling();
+}
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const welcomeMessage = `Привет! 👋 Я твой Научный Любопытик. 
@@ -52,5 +59,15 @@ bot.onText(/\/search (.+)/, async (msg, match) => {
         bot.sendMessage(chatId, 'Произошла ошибка при выполнении поиска. Пожалуйста, попробуйте позже.');
     }
 });
-console.log('Бот успешно запущен!');
+//console.log('Бот успешно запущен!');
+const express = require('express');
+const app = express();
+app.use(express.json());
+app.post(`/bot${token}`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200); // Отправляем OK Telegramу
+});
+app.listen(port, () => {
+    console.log(`Express server is listening on ${port}`);
+});
 
