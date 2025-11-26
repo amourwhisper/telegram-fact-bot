@@ -19,7 +19,8 @@ const factsKeyboard = {
     },
 };
 const bot = new TelegramBot(token);
-bot.setWebHook(`${url}/bot${token}`, {
+if (url) {
+    bot.setWebHook(`${url}/bot${token}`, {
         secret_token: process.env.SECRET_KEY 
     });
 } else {
@@ -76,6 +77,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
