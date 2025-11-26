@@ -43,7 +43,7 @@ bot.on('polling_error', (error) => {
 bot.onText(/\/search (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const query = match[1];
-    bot.sendMessage(chatId, `🔍 Ищу информацию по запросу: *${query}*...`, { parse_mode: 'Markdown' });
+   await bot.sendMessage(chatId, `🔍 Ищу информацию по запросу: *${query}*...`, { parse_mode: 'Markdown' });
     try {
         const searchResult = await googleSearchTool.search(query);
         let responseText;
@@ -52,10 +52,12 @@ bot.onText(/\/search (.+)/, async (msg, match) => {
             responseText += searchResult.snippets[0];
             if (searchResult.url) {
                 responseText += `/n/n[Подробнее](${searchResult.url})`;
-            }
+                await bot.sendMessage(chatId, responseText, { parse_mode: 'Markdown' });
         } else {
             responseText = `Извините, не удалось найти информацию по запросу "${query}". Попробуйте перефразировать.`;
-            bot.sendMessage(chatId, responseText, {parse_mode: 'Markdown' });
+            await bot.sendMessage(chatId, responseText, { parse_mode: 'Markdown' });
+            return;
+        }
     } catch (error) {
         console.error(('Ошибка поиска:', error);
         bot.sendMessage(chatId, 'Произошла ошибка при выполнении поиска. Пожалуйста, попробуйте позже.');
@@ -72,5 +74,6 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
