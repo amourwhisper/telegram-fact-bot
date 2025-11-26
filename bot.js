@@ -13,7 +13,6 @@ const factsKeyboard = {
     reply_markup: {
         keyboard: [
             [{ text: 'Получить Факт'}],{ text: 'Инфо'}], //создаем две кнопки с текстом
-        ],
         resize_keyboard: true,
         one_time_keyboard: false,
     },
@@ -93,6 +92,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
