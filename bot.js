@@ -31,4 +31,26 @@ bot.onText(/\/fact|Получить Факт/i, (msg) => {
 bot.on('polling_error', (error) => {
     console.log("Произошла ошибка, но бот продолжает работать...");
 });
+bot.onText(/\/search (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const query = match[1];
+    bot.sendMessage(chatId, `🔍 Ищу информацию по запросу: *${query}*...`, { parse_mode: 'Markdown' });
+    try {
+        const searchResult = await googleSearchTool.search(query);
+        let responseText;
+        if (searchResult.snippets && searchResult.snippets.length > 0) {
+            responseText = `**Результат поиска по запросу "${query}":**\n\n`;
+            responseText += searchResult.snippets[0];
+            if (searchResult.url) {
+                responseText += `/n/n[Подробнее](${searchResult.url})`;
+            }
+        } else {
+            responseText = `Извините, не удалось найти информацию по запросу "${query}". Попробуйте перефразировать.`;
+            bot.sendMessage(chatId, responseText, {parse_mode: 'Markdown' });
+    } catch (error) {
+        console.error(('Ошибка поиска:', error);
+        bot.sendMessage(chatId, 'Произошла ошибка при выполнении поиска. Пожалуйста, попробуйте позже.');
+    }
+});
 console.log('Бот успешно запущен!');
+
