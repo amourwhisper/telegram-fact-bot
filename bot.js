@@ -78,6 +78,7 @@ bot.onText(/\/info|Инфо/i, (msg) => {
 * /fact — Получить случайный научный факт
     
 🔗 **Разработка:** Бот создан для демонстрации развертывания Node.js на Render.
+    **Создатель:**  @aamuuurrr
     `;
     bot.sendMessage(chatId, infoMessage, {
         parse_mode: 'Markdown',
@@ -93,6 +94,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
