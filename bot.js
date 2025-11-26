@@ -18,6 +18,7 @@ const factsKeyboard = {
         one_time_keyboard: false,
     },
 };
+const sentFactIndices = {};
 const bot = new TelegramBot(token);
 if (url) {
     bot.setWebHook(`${url}/bot${token}`, {
@@ -35,9 +36,23 @@ bot.onText(/\/start/, (msg) => {
 });
 bot.onText(/\/fact|Получить Факт/i, (msg) => {
     const chatId = msg.chat.id;
-    const randomIndex = Math.floor(Math.random() * scienceFacts.length);
+    if (!sentFactIndices[chatId]) {
+        sentFactIndices[chatId] = [];
+    }
+    const sentIndices = sentFactIndices[chatId];
+    const totalFacts = scienceFacts.length;
+    if (sentIndices.length === totalFacts) {
+        sentFactIndices[chatId] = [];
+        bot.sendMessage(chatId, "✨ Вы просмотрели все научные факты! Бот постоянно обновлятеся, дождись новых знаний. А пока давай повторим всё заново? ✨", factsKeyboard);
+        return;
+    }
+      let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * totalFacts);
+    } while (sentIndices.includes(randomIndex));
+    sentIndices.push(randomIndex);
     const randomFact = scienceFacts[randomIndex];
-    bot.sendMessage(chatId, randomFact, factsKeyboard)
+    bot.sendMessage(chatId, randomFact, factsKeyboard);
 });
 bot.on('polling_error', (error) => {
     console.log("Произошла ошибка, но бот продолжает работать...");
@@ -94,6 +109,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
