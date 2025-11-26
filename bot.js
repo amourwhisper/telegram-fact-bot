@@ -43,7 +43,7 @@ bot.onText(/\/fact|Получить Факт/i, (msg) => {
     const totalFacts = scienceFacts.length;
     if (sentIndices.length === totalFacts) {
         sentFactIndices[chatId] = [];
-        bot.sendMessage(chatId, "✨ Вы просмотрели все научные факты! Бот постоянно обновлятеся, дождись новых знаний. А пока давай повторим всё заново? ✨", factsKeyboard);
+        bot.sendMessage(chatId, "✨ Повторение - мать учения! Давай пробежимся по фактам ещё раз. ✨", factsKeyboard);
         return;
     }
       let randomIndex;
@@ -109,6 +109,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
