@@ -1,5 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
 //const token = '8407533841:AAH0ERHBngFNTHwEQvVBa1gMBXD1h4E83Nk';
+const express = require('express');
+const port = process.env.PORT || 3000; 
+const url = process.env.RENDER_EXTERNAL_URL;
+
 const token = process.env.BOT_TOKEN;
 if (!token) {
     throw new Error('Токен BOT_TOKEN не найден в переменных окружения!');
@@ -14,8 +18,6 @@ const factsKeyboard = {
         one_time_keyboard: false,
     },
 };
-const port = process.env.PORT || 3000;
-const url = process.env.RENDER_EXTERNAL_URL;
 const bot = new TelegramBot(token);
 if (url) {
     bot.setWebHook(`${url}/bot${token}`);
@@ -60,7 +62,7 @@ bot.onText(/\/search (.+)/, async (msg, match) => {
     }
 });
 //console.log('Бот успешно запущен!');
-const express = require('express');
+
 const app = express();
 app.use(express.json());
 app.post(`/bot${token}`, (req, res) => {
@@ -70,4 +72,5 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
