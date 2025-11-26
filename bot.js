@@ -12,7 +12,7 @@ const scienceFacts = require('./facts.json');
 const factsKeyboard = {
     reply_markup: {
         keyboard: [
-            [{ text: 'Получить Факт'}], //создаем одну кнопку с текстом
+            [{ text: 'Получить Факт'}],{ text: 'Инфо'}], //создаем две кнопки с текстом
         ],
         resize_keyboard: true,
         one_time_keyboard: false,
@@ -67,7 +67,7 @@ bot.on('polling_error', (error) => {
    // }
 //});
 //console.log('Бот успешно запущен!'); Попытка выхода в интернет через бота
-bot.onText(/\/info/, (msg) => {
+bot.onText(/\/info|Инфо/i, (msg) => {
     const chatId = msg.chat.id;
     const infoMessage = `✨ **Информация о Научном Любопытике** ✨
     🤖 **Имя:** Научный Любопытик
@@ -93,6 +93,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
