@@ -9,15 +9,16 @@ if (!token) {
     throw new Error('Токен BOT_TOKEN не найден в переменных окружения!');
 }
 const scienceFacts = require('./facts.json');
-const factsKeyboard = {
-    reply_markup: {
-        keyboard: [
-            [{ text: 'Получить Факт'}, { text: 'Инфо'}],//создаем две кнопки с текстом
-        ],
-        resize_keyboard: true,
-        one_time_keyboard: false,
-    },
-};
+// const factsKeyboard = {
+//     reply_markup: {
+//         keyboard: [
+//             [{ text: 'Получить Факт'}, { text: 'Инфо'}],//создаем две кнопки с текстом
+//         ],
+//         resize_keyboard: true,
+//         one_time_keyboard: false,
+//     },
+// };
+
 const sentFactIndices = {};
 const bot = new TelegramBot(token);
 if (url) {
@@ -32,8 +33,9 @@ bot.onText(/\/start/, (msg) => {
     const welcomeMessage = `Привет! 👋 Я твой Научный Любопытик. 
     Я буду рассказывать тебе рандомные, интересные факты из мира науки.
     Чтобы получить факт, просто отправь команду /fact.`;
-    bot.sendMessage(chatId, welcomeMessage, factsKeyboard)
+    bot.sendMessage(chatId, welcomeMessage)
 });
+
 bot.onText(/\/fact|Получить Факт/i, (msg) => {
     const chatId = msg.chat.id;
     if (!sentFactIndices[chatId]) {
@@ -43,8 +45,7 @@ bot.onText(/\/fact|Получить Факт/i, (msg) => {
     const totalFacts = scienceFacts.length;
     if (sentIndices.length === totalFacts) {
         sentFactIndices[chatId] = [];
-        bot.sendMessage(chatId, "✨ Повторение - мать учения! Давай пробежимся по фактам ещё раз. ✨", factsKeyboard);
-        return;
+        bot.sendMessage(chatId, "✨ Повторение – мать учения! Давай пробежимся по фактам ещё раз.");
     }
       let randomIndex;
     do {
@@ -52,12 +53,46 @@ bot.onText(/\/fact|Получить Факт/i, (msg) => {
     } while (sentIndices.includes(randomIndex));
     sentIndices.push(randomIndex);
     const randomFact = scienceFacts[randomIndex];
-    bot.sendMessage(chatId, randomFact, factsKeyboard);
+    const detailsButton = fact.details 
+        ? [{ text: 'Подробнее 📖', callback_data: `details_${fact.id}` }]
+        : [];
+    const inlineKeyboard = {
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Далее ➡️', callback_data: 'next_fact' }, 
+                    ...detailsButton 
+                ]
+            ]
+        }
+    };
+    bot.sendMessage(chatId, fact.text, inlineKeyboard);
 });
-bot.on('polling_error', (error) => {
+
+bot.on('callback_query', (query) => {  //Добавление обработчика встроенных команд
+    const chatId = query.message.chat.id;
+    const data = query.data;
+    if (data === 'next_fact') { //если нажимаем кнопку "Далее"
+        bot.onText(/\/fact/i, query.message);
+        bot.answerCallbackQuery(query.id, { text: 'Загружаю следующий факт...' });
+        return
+    }
+    if (data.startsWith('details_')) { //если нажимаем на "Подробнее"
+        const factId = parseInt(data.replace('details_', ''));
+        const factId = parseInt(data.replace('details_', ''));
+        if (fact && fact.details) {
+            bot.sendMessage(chatId, `📖 *Подробности о факте ID ${factId}:*\n\n${fact.details}`, { parse_mode: 'Markdown' });
+            } else {
+            bot.sendMessage(chatId, 'К сожалению, развернутого объяснения для этого факта нет.');
+        }
+        bot.answerCallbackQuery(query.id, { text: 'Подробности загружены.' });
+    }
+});
+bot.on('polling_error', (error) => { //это добавлено для себя, для удобства в VS Code, дабы избежать кодового спама в консоли 
     console.log("Произошла ошибка, но бот продолжает работать...");
 });
-//bot.onText(/\/search (.+)/, async (msg, match) => {
+        
+//bot.onText(/\/search (.+)/, async (msg, match) => { //это была попытка бесплатно подключить бота к интернету
  //   const chatId = msg.chat.id;
   //  const query = match[1];
 //   await bot.sendMessage(chatId, `🔍 Ищу информацию по запросу: *${query}*...`, { parse_mode: 'Markdown' });
@@ -109,6 +144,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
