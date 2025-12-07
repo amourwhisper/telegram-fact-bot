@@ -46,13 +46,14 @@ bot.onText(/\/fact|Получить Факт/i, (msg) => {
     if (sentIndices.length === totalFacts) {
         sentFactIndices[chatId] = [];
         bot.sendMessage(chatId, "✨ Повторение – мать учения! Давай пробежимся по фактам ещё раз.");
+        return
     }
       let randomIndex;
     do {
         randomIndex = Math.floor(Math.random() * totalFacts);
     } while (sentIndices.includes(randomIndex));
     sentIndices.push(randomIndex);
-    const randomFact = scienceFacts[randomIndex];
+   const fact = scienceFacts[randomIndex];
     const detailsButton = fact.details 
         ? [{ text: 'Подробнее 📖', callback_data: `details_${fact.id}` }]
         : [];
@@ -143,6 +144,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
