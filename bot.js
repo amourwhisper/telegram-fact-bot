@@ -36,27 +36,31 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(chatId, welcomeMessage)
 });
 
-bot.onText(/\/fact|Получить Факт/i, (msg) => {
+function sendFact(msg) {
     const chatId = msg.chat.id;
     if (!sentFactIndices[chatId]) {
         sentFactIndices[chatId] = [];
     }
     const sentIndices = sentFactIndices[chatId];
     const totalFacts = scienceFacts.length;
+
     if (sentIndices.length === totalFacts) {
         sentFactIndices[chatId] = [];
         bot.sendMessage(chatId, "✨ Повторение – мать учения! Давай пробежимся по фактам ещё раз.");
-        return
+        return; 
     }
-      let randomIndex;
+    let randomIndex;
     do {
         randomIndex = Math.floor(Math.random() * totalFacts);
     } while (sentIndices.includes(randomIndex));
+    
     sentIndices.push(randomIndex);
-   const fact = scienceFacts[randomIndex];
+    const fact = scienceFacts[randomIndex];
+    
     const detailsButton = fact.details 
         ? [{ text: 'Подробнее 📖', callback_data: `details_${fact.id}` }]
         : [];
+        
     const inlineKeyboard = {
         reply_markup: {
             inline_keyboard: [
@@ -67,21 +71,22 @@ bot.onText(/\/fact|Получить Факт/i, (msg) => {
             ]
         }
     };
+    
     bot.sendMessage(chatId, fact.text, inlineKeyboard);
-});
+}
 
 bot.on('callback_query', (query) => {  //Добавление обработчика встроенных команд
     const chatId = query.message.chat.id;
     const data = query.data;
     if (data === 'next_fact') { //если нажимаем кнопку "Далее"
-        bot.onText(/\/fact/i, query.message);
-        bot.answerCallbackQuery(query.id, { text: 'Загружаю следующий факт...' });
+     sendFact(query.message);
+       bot.answerCallbackQuery(query.id, { text: 'Загружаю следующий факт...' });
         return
     }
     if (data.startsWith('details_')) { //если нажимаем на "Подробнее"
         const factId = parseInt(data.replace('details_', ''));
         const factDetailsObject = scienceFacts.find(f => f.id === factId);
-       if (factDetailsObject && factDetailsObject.details) {
+      if (factDetailsObject && factDetailsObject.details) {
            bot.sendMessage(chatId, `📖 *Подробности о факте:*\n\n${factDetailsObject.details}`, { parse_mode: 'Markdown' });
         } else {
             bot.sendMessage(chatId, 'К сожалению, развернутого объяснения для этого факта нет.');
@@ -145,6 +150,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
