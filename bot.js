@@ -83,7 +83,7 @@ bot.on('callback_query', (query) => {  //Добавление обработчи
        bot.answerCallbackQuery(query.id, { text: 'Загружаю следующий факт...' });
         return
     }
-    if (data.startsWith('details_')) { //если нажимаем на "Подробнее"
+    if (data.startsWith('details_')) {
         const factId = parseInt(data.replace('details_', ''));
         const factDetailsObject = scienceFacts.find(f => f.id === factId);
       if (factDetailsObject && factDetailsObject.details) {
@@ -138,7 +138,6 @@ bot.onText(/\/info|Инфо/i, (msg) => {
     `;
     bot.sendMessage(chatId, infoMessage, {
         parse_mode: 'Markdown',
-        ...factsKeyboard
     });
 });
 const app = express();
@@ -150,6 +149,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
