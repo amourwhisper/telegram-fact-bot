@@ -71,12 +71,10 @@ function sendFact(msg) {
             ]
         }
     };
-    
     bot.sendMessage(chatId, fact.text, inlineKeyboard);
-    bot.onText(/\/fact|Получить\s+Факт/i, (msg) => {
+};
+  bot.onText(/\/fact|Получить\s+Факт/i, (msg) => {
     sendFact(msg);
-});
-}
 
 bot.on('callback_query', (query) => {  //Добавление обработчика встроенных команд
     const chatId = query.message.chat.id;
@@ -152,6 +150,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
