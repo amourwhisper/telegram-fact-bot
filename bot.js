@@ -82,7 +82,7 @@ bot.on('callback_query', (query) => {  //Добавление обработчи
         const factId = parseInt(data.replace('details_', ''));
         const factDetailsObject = scienceFacts.find(f => f.id === factId);
        if (factDetailsObject && factDetailsObject.details) {
-           bot.sendMessage(chatId, `📖 *Подробности о факте ID ${factId}:*\n\n${factDetailsObject.details}`, { parse_mode: 'Markdown' });
+           bot.sendMessage(chatId, `📖 *Подробности о факте:*\n\n${factDetailsObject.details}`, { parse_mode: 'Markdown' });
         } else {
             bot.sendMessage(chatId, 'К сожалению, развернутого объяснения для этого факта нет.');
         }
@@ -145,6 +145,7 @@ app.post(`/bot${token}`, (req, res) => {
 app.listen(port, () => {
     console.log(`Express server is listening on ${port}`);
 });
+
 
 
 
